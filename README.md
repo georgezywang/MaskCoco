@@ -30,7 +30,9 @@ python3 driver.py
 ```
 Open `display.ipynb` and run the cell. An annotated wave image should appear. A bounding box and a mask should be present in the image.
 
-![Alt text](resources/display.jpg "Annotated Wave Image")
+<p align="center">
+  <img src="resources/display.jpg">
+</p>
 <p align = "center">
 Annotated Wave Image
 </p>
