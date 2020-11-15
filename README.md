@@ -21,7 +21,8 @@ The demo parses a mask of a wave image[1] and displays an annotated image.
 Wave Image   |  mask
 :-------------------------:|:-------------------------:
 ![Alt text](images/001_rgb.png "Wave Image")  |  ![Alt text](images/001_gt.png "Mask")
-which can both be found in the images folder.
+
+The wave image is the original image to be segmented, and the mask captures the wave. These images can both be found in the images folder.
 
 To play with this demo, run the following:
 ```
