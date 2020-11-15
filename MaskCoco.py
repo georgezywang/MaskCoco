@@ -5,8 +5,8 @@ Created on Sat Nov 14 15:06:09 2020
 
 @author: wzy
 """
-import numpy as np                                
-from skimage import measure                        
+import numpy as np
+from skimage import measure
 from shapely.geometry import Polygon, MultiPolygon
 from PIL import Image
 import json
@@ -175,14 +175,16 @@ class MaskParser():
                 segmentations.append(segmentation)
                 polygons.append(poly)
             except:
+                polyIndex = 0
                 while(True):
                     try:
-                        part = poly[i].simplify(1.0, preserve_topology=False)
+                        part = poly[polyIndex].simplify(1.0, preserve_topology=False)
                         segmentation = np.array(part.exterior.coords).ravel().tolist()
                         segmentations.append(segmentation)
                         polygons.append(part)
                     except:
                         break
+                    polyIndex = polyIndex + 1
     
         # Combine the polygons to calculate the bounding box and area
         multi_poly = MultiPolygon(polygons)
