@@ -14,11 +14,12 @@ import datetime
 import os
 
 class ImageLabel():
-    def __init__(self, name, mask, cat, id = None):
+    def __init__(self, name, mask, cat, id = None, crowd = False):
         self.name = name
         self.mask= mask
         self.cat= cat
         self.id = id
+        self.crowd = crowd
 
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -92,10 +93,10 @@ class MaskParser():
             
     def createMaskList(self):
         iter = 0
-        for imgage in self.imgList:
+        for currImg in self.imgList:
             path = self.inPath
-            mask = imgage.mask
-            img = imgage.name
+            mask = currImg.mask
+            img = currImg.name
             maskPath = os.path.join(path, mask)
             #imgPath = os.path.join(path, img)
             
@@ -108,7 +109,7 @@ class MaskParser():
             if(self.useImgID == False):
                 id = iter
             else:
-                id = imgage.id
+                id = currImg.id
             
             width, height = maskImg.size
             assert width > 0 and height > 0, "empty image"
@@ -126,7 +127,7 @@ class MaskParser():
             img = DateTimeEncoder().encode(img)
             
             self.img.append(json.loads(img))
-            ann = self.createSubMaskAnnotation(maskImg, id, imgage.cat, id, True)
+            ann = self.createSubMaskAnnotation(maskImg, id, currImg.cat, id, currImg.crowd)
             self.annotations.append(ann)
             iter = iter + 1
     
