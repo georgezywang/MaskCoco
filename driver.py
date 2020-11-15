@@ -1,10 +1,9 @@
 import MaskCoco
 import os
 
-def fileDic():
+def fileDic(path):
     imgList = []
     for i in range(501):
-        path = "images"
         mask = str(i).zfill(3) + "_gt.png"
         img = str(i).zfill(3) + "_rgb.png"
         maskPath = os.path.join(path, mask)
@@ -14,7 +13,7 @@ def fileDic():
     return imgList
 
 catDic = {"wave": 0}
-imgList = fileDic()
+imgList = fileDic("images")
 myParser = MaskCoco.MaskParser(catDic, imgList, inPath = "images",\
                                outPath="images/dat.json", useImgID = True)
 myParser.saveJson()

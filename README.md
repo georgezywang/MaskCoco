@@ -29,7 +29,7 @@ To play with this demo, run the following:
 cd MaskCoco
 python3 driver.py
 ```
-Open `display.ipynb` and run the cell. An annotated wave image should appear. A bounding box and a mask should be present in the image.
+Open `demo.ipynb` and run the cell. An annotated wave image should appear. A bounding box and a mask should be present in the image.
 
 <p align="center">
   <img src="resources/display.jpg">
@@ -37,7 +37,10 @@ Open `display.ipynb` and run the cell. An annotated wave image should appear. A 
 <p align = "center">
 Annotated Wave Image
 </p>
-The visualizer utilizes code was taken from kaggle [2]. To change the mask's color, or display more information, please visit the link in the references section. This script was also inspired by this post [3].
+
+The visualizer was taken from kaggle [2]. To change the mask's color, or display more information, please visit the link in the references section. To visualize more complicated images, i.e. those with a lot of polygons, consider using the alternative detectron2 visualization tool in `demo.ipynb`, which requires cuda support. 
+
+This script was also inspired by this post [3].
 
 ## Using Custom Dataset
 To use a custom dataset, make changes in the `driver.py` file. MaskCoco.MaskParser has two required arguments, being the category dictionary and a list of images. The list of images should be initialized using the ImageLabel class from `MaskCoco.py`. If no image id is provided when initializing, MaskCoco will incrementally generate an id for each image. 

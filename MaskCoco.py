@@ -5,14 +5,6 @@ Created on Sat Nov 14 15:06:09 2020
 
 @author: wzy
 """
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Nov 14 01:17:17 2020
-
-@author: wzy
-"""
 import numpy as np                                
 from skimage import measure                        
 from shapely.geometry import Polygon, MultiPolygon
@@ -120,7 +112,7 @@ class MaskParser():
             
             width, height = maskImg.size
             assert width > 0 and height > 0, "empty image"
-            if(len(maskImg.getpixel((0,0))) == 3):
+            if(type(maskImg.getpixel((0,0))) != int):
                 maskImg = self.redDim(maskImg)
             
             img = {
@@ -134,7 +126,7 @@ class MaskParser():
             img = DateTimeEncoder().encode(img)
             
             self.img.append(json.loads(img))
-            ann = self.createSubMaskAnnotation(maskImg, id, 0, imgage.cat, False)
+            ann = self.createSubMaskAnnotation(maskImg, id, imgage.cat, id, True)
             self.annotations.append(ann)
             iter = iter + 1
     
@@ -164,7 +156,7 @@ class MaskParser():
         
     def createSubMaskAnnotation(self, sub_mask, image_id, category_id, annotation_id, is_crowd):
         contours = measure.find_contours(sub_mask, 0.5, positive_orientation='low')
-    
+        print("Creating annotations for image " + str(image_id))
         segmentations = []
         polygons = []
         for contour in contours:
@@ -176,10 +168,21 @@ class MaskParser():
     
             # Make a polygon and simplify it
             poly = Polygon(contour)
-            poly = poly.simplify(1.0, preserve_topology=False)
-            polygons.append(poly)
-            segmentation = np.array(poly.exterior.coords).ravel().tolist()
-            segmentations.append(segmentation)
+            try:
+                poly = poly.simplify(1.0, preserve_topology=False)
+                segmentation = np.array(poly.exterior.coords).ravel().tolist()
+                segmentations.append(segmentation)
+                polygons.append(poly)
+            except:
+                while(True):
+                    try:
+                        part = poly[i].simplify(1.0, preserve_topology=False)
+                        segmentation = np.array(part.exterior.coords).ravel().tolist()
+                        segmentations.append(segmentation)
+                        polygons.append(part)
+                    except:
+                        break
+                    i = i + 1
     
         # Combine the polygons to calculate the bounding box and area
         multi_poly = MultiPolygon(polygons)
