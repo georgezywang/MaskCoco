@@ -183,7 +183,6 @@ class MaskParser():
                         polygons.append(part)
                     except:
                         break
-                    i = i + 1
     
         # Combine the polygons to calculate the bounding box and area
         multi_poly = MultiPolygon(polygons)
