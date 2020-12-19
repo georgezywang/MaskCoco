@@ -35,5 +35,5 @@ if __name__ == "__main__":
 
     catDic = readDict(args.catpath)
     imgList = fileDic(args.inpath)
-    myParser = MaskCoco.MaskParser(catDic, imgList, inPath = args.inpath, outPath=args.outpath, useImgID = False)
+    myParser = MaskCoco.MaskParser(catDic, imgList, inPath = args.inpath, outPath=args.outpath, useImgID = args.imageid)
     myParser.saveJson()
