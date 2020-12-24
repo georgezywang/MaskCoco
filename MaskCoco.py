@@ -12,6 +12,7 @@ from PIL import Image
 import json
 import datetime
 import os
+import OptimizedMask
 
 class ImageLabel():
     def __init__(self, name, mask, cat, id = None, crowd = False):
@@ -156,52 +157,16 @@ class MaskParser():
                 
         
     def createSubMaskAnnotation(self, sub_mask, image_id, category_id, annotation_id, is_crowd):
-        contours = measure.find_contours(sub_mask, 0.5, positive_orientation='low')
-        print("Creating annotations for image " + str(image_id))
-        segmentations = []
-        polygons = []
-        for contour in contours:
-            # Flip from (row, col) representation to (x, y)
-            # and subtract the padding pixel
-            for i in range(len(contour)):
-                row, col = contour[i]
-                contour[i] = (col - 1, row - 1)
+        if is_crowd:
+            is_crowd = 'crowd'
+        else:
+            is_crowd = None
+        try:
+            binary_mask = np.asarray(sub_mask.convert('1')).astype(np.uint8)
+        except:
+            binary_mask = np.asarray(sub_mask).astype(np.uint8)
+        category_info = {'id': category_id, 'is_crowd': is_crowd}
+        segmentations = OptimizedMask.create_annotation_info(annotation_id, image_id, category_info, binary_mask, np.flip(binary_mask.shape))
+        print("Creating Segmentations for Image {}".format(image_id))
     
-            # Make a polygon and simplify it
-            poly = Polygon(contour)
-            try:
-                poly = poly.simplify(1.0, preserve_topology=False)
-                segmentation = np.array(poly.exterior.coords).ravel().tolist()
-                segmentations.append(segmentation)
-                polygons.append(poly)
-            except:
-                polyIndex = 0
-                while(True):
-                    try:
-                        part = poly[polyIndex].simplify(1.0, preserve_topology=False)
-                        segmentation = np.array(part.exterior.coords).ravel().tolist()
-                        segmentations.append(segmentation)
-                        polygons.append(part)
-                    except:
-                        break
-                    polyIndex = polyIndex + 1
-    
-        # Combine the polygons to calculate the bounding box and area
-        multi_poly = MultiPolygon(polygons)
-        x, y, max_x, max_y = multi_poly.bounds
-        width = max_x - x
-        height = max_y - y
-        bbox = (x, y, width, height)
-        area = multi_poly.area
-    
-        annotation = {
-            'segmentation': segmentations,
-            'iscrowd': is_crowd,
-            'image_id': image_id,
-            'category_id': category_id,
-            'id': annotation_id,
-            'bbox': bbox,
-            'area': area
-        }
-    
-        return annotation
+        return segmentations
